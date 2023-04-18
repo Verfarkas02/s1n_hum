@@ -1,0 +1,6 @@
+program.version = 0.1
+
+database.type = mysql
+database.name = adatbazisnev
+database.user = adatbazis_felhasznalo
+database.pass = jelszo
