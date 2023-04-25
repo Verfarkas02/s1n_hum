@@ -23,6 +23,20 @@ public class Database {
             System.out.println(employee.name);
         });
     }
+
+    public Connection connectDb() throws ClassNotFoundException, SQLException{
+        Connection con =null;
+        String url ="jdbc:mariadb://localhost:3306/hum";
+        Class.forName("org.mariadb.jdbc.Driver");
+
+        con =DriverManager.getConnection(url, "hum", "titok");
+        System.out.println("kapcsolódva");
+        return con;
+    }
+    public void closeDb(Connection con) throws SQLException{
+        con.close();
+    }
+
     //Hibakezelő metodus
     public void insertEmployee(Employee emp){
         try {
@@ -40,12 +54,7 @@ public class Database {
     //Iparikód (hasznos kód)
     public void  tryInsertEmployee(Employee emp) throws SQLException, ClassNotFoundException{
         
-        Connection con =null;
-        String url ="jdbc:mariadb://localhost:3306/hum";
-        Class.forName("org.mariadb.jdbc.Driver");
-
-        con =DriverManager.getConnection(url, "hum", "titok");
-        System.out.println("működik");
+        Connection con =this.connectDb();
         String sql ="insert into employees" +
             "(name, city, salary) values"+
             "(?, ?, ?)";
@@ -56,8 +65,7 @@ public class Database {
         pstmt.setDouble(3, emp.salary);
         System.out.println(pstmt.toString());
         pstmt.execute();
-        
-        con.close();
+        this.closeDb(con); //con.close();
     }
 
     public ArrayList<Employee> getEmployee(){
@@ -74,18 +82,13 @@ public class Database {
     public ArrayList<Employee> tryGetEmployee() throws ClassNotFoundException, SQLException{
         ArrayList<Employee> empList= new ArrayList<>();
 
-        Connection con =null;
-        String url ="jdbc:mariadb://localhost:3306/hum";
-        Class.forName("org.mariadb.jdbc.Driver");
-        
-        con =DriverManager.getConnection(url, "hum", "titok");
-        System.out.println("működik");
+       Connection con= connectDb();
 
         String sql ="select * from employees";
         Statement stmt= con.createStatement();
         ResultSet rs= stmt.executeQuery(sql);
         empList = convertResToList(rs);
-
+        closeDb(con);
         return empList;
     }
     public ArrayList<Employee> convertResToList(ResultSet rs) throws SQLException{
